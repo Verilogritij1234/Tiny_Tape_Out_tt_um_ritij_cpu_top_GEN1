@@ -1,40 +1,46 @@
-# SPDX-FileCopyrightText: © 2024 Tiny Tapeout
-# SPDX-License-Identifier: Apache-2.0
-
 import cocotb
 from cocotb.clock import Clock
-from cocotb.triggers import ClockCycles
-
+from cocotb.triggers import RisingEdge, ClockCycles
 
 @cocotb.test()
-async def test_project(dut):
-    dut._log.info("Start")
+async def test_alu(dut):
+    dut._log.info("Starting ALU Test")
 
-    # Set the clock period to 10 us (100 KHz)
-    clock = Clock(dut.clk, 10, units="us")
+    # 1. Generate a 50 MHz clock (20ns period)
+    clock = Clock(dut.clk, 20, units="ns")
     cocotb.start_soon(clock.start())
 
-    # Reset
-    dut._log.info("Reset")
+    # 2. Initialize inputs
     dut.ena.value = 1
     dut.ui_in.value = 0
-    dut.uio_in.value = 0
-    dut.rst_n.value = 0
-    await ClockCycles(dut.clk, 10)
-    dut.rst_n.value = 1
+    dut.uio_in.value = 0 # Opcode 000 (ADD)
+    dut.rst_n.value = 0  # Assert reset
 
-    dut._log.info("Test project behavior")
+    # 3. Apply reset
+    await ClockCycles(dut.clk, 5)
+    dut.rst_n.value = 1  # Release reset
+    await ClockCycles(dut.clk, 2)
+    dut._log.info("Reset complete")
 
-    # Set the input values you want to test
-    dut.ui_in.value = 20
-    dut.uio_in.value = 30
-
-    # Wait for one clock cycle to see the output values
+    # 4. Test LOAD (Opcode 101 / 5)
+    dut._log.info("Testing LOAD operation")
+    dut.uio_in.value = 5      # Opcode = LOAD
+    dut.ui_in.value = 10      # Data = 10
     await ClockCycles(dut.clk, 1)
+    assert int(dut.uo_out.value) == 10, f"Expected 10, got {int(dut.uo_out.value)}"
 
-    # The following assersion is just an example of how to check the output values.
-    # Change it to match the actual expected output of your module:
-    assert dut.uo_out.value == 50
+    # 5. Test ADD (Opcode 000 / 0)
+    dut._log.info("Testing ADD operation")
+    dut.uio_in.value = 0      # Opcode = ADD
+    dut.ui_in.value = 15      # Data = 15
+    await ClockCycles(dut.clk, 1)
+    assert int(dut.uo_out.value) == 25, f"Expected 25, got {int(dut.uo_out.value)}"
 
-    # Keep testing the module by changing the input values, waiting for
-    # one or more clock cycles, and asserting the expected output values.
+    # 6. Test SUB (Opcode 001 / 1)
+    dut._log.info("Testing SUB operation")
+    dut.uio_in.value = 1      # Opcode = SUB
+    dut.ui_in.value = 5       # Data = 5
+    await ClockCycles(dut.clk, 1)
+    assert int(dut.uo_out.value) == 20, f"Expected 20, got {int(dut.uo_out.value)}"
+
+    dut._log.info("All tests passed successfully!")
