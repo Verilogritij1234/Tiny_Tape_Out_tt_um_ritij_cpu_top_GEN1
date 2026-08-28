@@ -82,24 +82,28 @@ module cpu_top (
         .rd1(reg_a),
         .rd2(reg_b)
     );
+// Explicitly declare the zero wire before using it
+    wire zero;
+    
+    // Explicitly declare the dummy wires we added previously
+    wire unused_cout, unused_borrow, unused_parity, unused_inv;
+
+    // --- ALU ---
+    ALU #( .BUS_WIDTH(32) ) myalu (
+        .a(reg_a),
+        .b(alu_src ? alu_imm : reg_b),
+        .carry_in(1'b0),
+        .opcode(alu_opcode),
+        .y(out_data),
+        .zero(zero),
+        .carry_out(unused_cout),
+        .borrow(unused_borrow),
+        .parity(unused_parity),
+        .invalid_op(unused_inv)
+    );
 
 
-wire unused_cout, unused_borrow, unused_parity, unused_inv;
-
-ALU #( .BUS_WIDTH(32) ) myalu (
-    .a(reg_a),
-    .b(alu_src ? alu_imm : reg_b),
-    .carry_in(1'b0),
-    .opcode(alu_opcode),
-    .y(out_data),
-    .zero(zero),
-    .carry_out(unused_cout),
-    .borrow(unused_borrow),
-    .parity(unused_parity),
-    .invalid_op(unused_inv)
-);
-
-
+    
     // // --- ALU ---
     // wire zero;
     // ALU #( .BUS_WIDTH(32) ) myalu (
