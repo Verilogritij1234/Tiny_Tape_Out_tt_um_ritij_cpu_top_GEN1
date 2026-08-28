@@ -86,8 +86,9 @@ module cpu_top (
     wire zero;
     
     // Explicitly declare the dummy wires we added previously
-  // 1. Create a dummy wire to catch the ALU's output so it doesn't error out
+// Explicitly declare the ALU tap AND the dummy wires
     wire [31:0] alu_y;
+    wire unused_cout, unused_borrow, unused_parity, unused_inv;
 
     // --- ALU ---
     ALU #( .BUS_WIDTH(32) ) myalu (
@@ -95,7 +96,7 @@ module cpu_top (
         .b(alu_src ? alu_imm : reg_b),
         .carry_in(1'b0),
         .opcode(alu_opcode),
-        .y(alu_y),               // Connect to dummy wire instead of out_data
+        .y(alu_y),               // Connected to dummy wire
         .zero(zero),
         .carry_out(unused_cout),
         .borrow(unused_borrow),
@@ -103,10 +104,9 @@ module cpu_top (
         .invalid_op(unused_inv)
     );
 
-    // 2. FORCE THE PROGRAM COUNTER TO THE WRAPPER OUTPUT
-    assign out_data = {24'b0, pc};
 
     
+
 
     // // --- ALU ---
     // wire zero;
