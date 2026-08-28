@@ -83,9 +83,8 @@ module cpu_top (
         .rd2(reg_b)
     );
 
-
-    
-// Explicitly declare ONLY the dummy wires
+// Explicitly declare ALL wires connecting to the ALU outputs
+    wire zero;
     wire unused_cout, unused_borrow, unused_parity, unused_inv;
 
     // --- ALU ---
@@ -94,15 +93,13 @@ module cpu_top (
         .b(alu_src ? alu_imm : reg_b),
         .carry_in(1'b0),
         .opcode(alu_opcode),
-        .y(out_data),            // CRITICAL FIX: Reconnect directly to the CPU output
-        .zero(zero),
+        .y(out_data),            
+        .zero(zero),             // This wire must be declared above
         .carry_out(unused_cout),
         .borrow(unused_borrow),
         .parity(unused_parity),
         .invalid_op(unused_inv)
     );
-
-
     // // --- ALU ---
     // wire zero;
     // ALU #( .BUS_WIDTH(32) ) myalu (
