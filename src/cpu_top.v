@@ -82,12 +82,10 @@ module cpu_top (
         .rd1(reg_a),
         .rd2(reg_b)
     );
-// Explicitly declare the zero wire before using it
-    wire zero;
+
+
     
-    // Explicitly declare the dummy wires we added previously
-// Explicitly declare the ALU tap AND the dummy wires
-    wire [31:0] alu_y;
+// Explicitly declare ONLY the dummy wires
     wire unused_cout, unused_borrow, unused_parity, unused_inv;
 
     // --- ALU ---
@@ -96,16 +94,13 @@ module cpu_top (
         .b(alu_src ? alu_imm : reg_b),
         .carry_in(1'b0),
         .opcode(alu_opcode),
-        .y(alu_y),               // Connected to dummy wire
+        .y(out_data),            // CRITICAL FIX: Reconnect directly to the CPU output
         .zero(zero),
         .carry_out(unused_cout),
         .borrow(unused_borrow),
         .parity(unused_parity),
         .invalid_op(unused_inv)
     );
-
-
-    
 
 
     // // --- ALU ---
