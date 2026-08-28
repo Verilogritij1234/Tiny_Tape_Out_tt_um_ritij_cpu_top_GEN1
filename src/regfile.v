@@ -28,7 +28,7 @@ module regfile (
 
     always @(posedge clk) begin
     if (we && rd != 0) begin
-        registers[rd] <= wd;
+        regs[rd] <= wd;
     end
 end
 
