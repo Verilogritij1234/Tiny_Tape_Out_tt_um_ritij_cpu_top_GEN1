@@ -19,10 +19,10 @@ module regfile (
     assign rd2 = (rs2 == 0) ? 32'b0 : regs[rs2];
 
     // Write port (synchronous)
-    always @(posedge clk) begin
-        if (we && rd != 0) begin
-            regs[rd] <= wd;
-            $display("Register x%0d <= %h at time %0t", rd, wd, $time);
-        end
-    end
+    // always @(posedge clk) begin
+    //     if (we && rd != 0) begin
+    //         regs[rd] <= wd;
+    //         $display("Register x%0d <= %h at time %0t", rd, wd, $time);
+    //     end
+    // end
 endmodule
