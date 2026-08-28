@@ -17,7 +17,7 @@ project:
   source_files:
     - tt_um_cpu.v
     - cpu_top.v
-    - ALU.v
+    - alu.v
     - rom.v
     - control_unit.v
     - alu_control.v
