@@ -25,4 +25,11 @@ module regfile (
     //         $display("Register x%0d <= %h at time %0t", rd, wd, $time);
     //     end
     // end
+
+    always @(posedge clk) begin
+    if (we && rd != 0) begin
+        registers[rd] <= wd;
+    end
+end
+
 endmodule

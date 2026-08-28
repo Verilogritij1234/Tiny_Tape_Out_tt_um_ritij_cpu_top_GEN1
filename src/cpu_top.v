@@ -1,9 +1,7 @@
 module cpu_top (
     input clk, reset,
     input irq,              // Simple edge/level interrupt request
-    output [31:0] out_data,
-    inout VPWR,
-    inout VGND
+    output [31:0] out_data
 );
 
     // --- Minimal Interrupt State ---
@@ -85,16 +83,33 @@ module cpu_top (
         .rd2(reg_b)
     );
 
-    // --- ALU ---
-    wire zero;
-    ALU #( .BUS_WIDTH(32) ) myalu (
-        .a(reg_a),
-        .b(alu_src ? alu_imm : reg_b),
-        .carry_in(1'b0),
-        .opcode(alu_opcode),
-        .y(out_data),
-        .zero(zero)
-    );
+
+wire unused_cout, unused_borrow, unused_parity, unused_inv;
+
+ALU #( .BUS_WIDTH(32) ) myalu (
+    .a(reg_a),
+    .b(alu_src ? alu_imm : reg_b),
+    .carry_in(1'b0),
+    .opcode(alu_opcode),
+    .y(out_data),
+    .zero(zero),
+    .carry_out(unused_cout),
+    .borrow(unused_borrow),
+    .parity(unused_parity),
+    .invalid_op(unused_inv)
+);
+
+
+    // // --- ALU ---
+    // wire zero;
+    // ALU #( .BUS_WIDTH(32) ) myalu (
+    //     .a(reg_a),
+    //     .b(alu_src ? alu_imm : reg_b),
+    //     .carry_in(1'b0),
+    //     .opcode(alu_opcode),
+    //     .y(out_data),
+    //     .zero(zero)
+    // );
 
     // --- Data RAM ---
     parameterized_RAM #( .DATA_WIDTH(32), .ADDR_WIDTH(6) ) dataRam (
