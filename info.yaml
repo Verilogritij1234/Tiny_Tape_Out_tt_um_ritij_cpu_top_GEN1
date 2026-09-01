@@ -8,7 +8,7 @@ project:
   clock_hz:     50000000       
 
   # Increased area to fit the 32-bit registers, RAM, and ROM
-  tiles: "4x4"          
+  tiles: "3x2"          
 
   # Updated to match the wrapper module name
   top_module:  "tt_um_cpu"
