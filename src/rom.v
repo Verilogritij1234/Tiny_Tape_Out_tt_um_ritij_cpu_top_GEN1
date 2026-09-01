@@ -22,7 +22,7 @@ module rom #(
         end
         
         // 2. Load the actual hex file using the correct OpenLane path
-        $readmemh("src/instruction_set.hex", rom_mem);
+      $readmemh("src/instruction_set.hex", rom_mem);
     end
 
     // 3. Asynchronous (combinational) read
