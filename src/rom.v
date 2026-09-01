@@ -14,19 +14,21 @@ module rom #(
 
 integer i;
     initial begin
-        // 1. Fill background with continuous increment to prevent static loops
+        // 1. Fill the background with a continuous increment to prevent static loops
         for (i = 0; i < DEPTH; i = i + 1) begin
             rom_mem[i] = 32'h00108093; // addi x1, x1, 1
         end
         
-        // 2. The "Full CPU" Exerciser Loop
-        // This guarantees Yosys sees constantly changing data across ALL modules[cite: 2]
+        // 2. The Unbreakable Dependency Loop (Full CPU Exerciser)
         rom_mem[0] = 32'h00108093; // addi x1, x1, 1  -> Forces ALU & RegFile write
         rom_mem[1] = 32'h00102023; // sw   x1, 0(x0)  -> Forces Data RAM write
         rom_mem[2] = 32'h00002103; // lw   x2, 0(x0)  -> Forces Data RAM read & mem_to_reg mux
-        rom_mem[3] = 32'hff5ff06f; // jal  x0, -12    -> Forces Branch Logic (Jumps back to PC 0)
+        rom_mem[3] = 32'h002081b3; // add  x3, x1, x2 -> Forces x2 through the ALU out to the pins
+        rom_mem[4] = 32'hff1ff06f; // jal  x0, -16    -> Forces Branch Logic (Jumps back to PC 0)
+        
+        // Remove or comment out the $readmemh completely for this test
+        // $readmemh("src/instruction_set.hex", rom_mem);
     end
-
     // 3. Asynchronous (combinational) read[cite: 1]
     assign data_rom_out = rom_mem[addr_rd];
 
