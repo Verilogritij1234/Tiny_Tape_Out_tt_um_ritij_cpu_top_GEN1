@@ -12,21 +12,19 @@ module rom #(
 );
     reg [WIDTH-1:0] rom_mem [0:DEPTH-1];
 
-    integer i;
+integer i;
     initial begin
-        // 1. Fill the background with a continuous increment to prevent static loops[cite: 1]
+        // 1. Fill background with continuous increment to prevent static loops
         for (i = 0; i < DEPTH; i = i + 1) begin
-            rom_mem[i] = 32'h00108093; // addi x1, x1, 1[cite: 1]
+            rom_mem[i] = 32'h00108093; // addi x1, x1, 1
         end
         
-        // 2. Hardcode the 3-instruction dynamic loop at the start[cite: 1]
-        // This guarantees Yosys sees a constantly changing ALU output[cite: 1]
-        rom_mem[0] = 32'h00000093; // addi x1, x0, 0[cite: 1]
-        rom_mem[1] = 32'h00108093; // addi x1, x1, 1[cite: 1]
-        rom_mem[2] = 32'hffdff06f; // jal x0, -4 (jumps back to PC 1)[cite: 1]
-        
-        // Use readmemh to load larger programs, but the hardcoded logic above acts as a failsafe[cite: 1]
-        $readmemh("src/instruction_set.hex", rom_mem);
+        // 2. The "Full CPU" Exerciser Loop
+        // This guarantees Yosys sees constantly changing data across ALL modules[cite: 2]
+        rom_mem[0] = 32'h00108093; // addi x1, x1, 1  -> Forces ALU & RegFile write
+        rom_mem[1] = 32'h00102023; // sw   x1, 0(x0)  -> Forces Data RAM write
+        rom_mem[2] = 32'h00002103; // lw   x2, 0(x0)  -> Forces Data RAM read & mem_to_reg mux
+        rom_mem[3] = 32'hff5ff06f; // jal  x0, -12    -> Forces Branch Logic (Jumps back to PC 0)
     end
 
     // 3. Asynchronous (combinational) read[cite: 1]
