@@ -85,4 +85,10 @@
 
   "//": "Only export pin area in LEF (without any connected nets)",
   "MAGIC_WRITE_LEF_PINONLY": 1
+
+
+  "//": "Aggressive Antenna Violation Repair by ritij kaushal",
+  "DIODE_INSERTION_STRATEGY": 3,
+  "GRT_ANT_ITERS": 15,
+  "GRT_ANT_MARGIN": 10
 }
